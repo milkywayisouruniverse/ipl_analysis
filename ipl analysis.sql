@@ -73,3 +73,66 @@ LIMIT 10;
 SELECT COUNT(*) AS matches_where_toss_helped
 FROM matches
 WHERE toss_winner = winner;
+#highest team score
+SELECT match_id,
+       inning,
+       SUM(total_runs) AS score
+FROM deliveries
+GROUP BY match_id, inning
+ORDER BY score DESC
+LIMIT 10;
+#lowest team score 
+SELECT match_id,
+       inning,
+       SUM(total_runs) AS score
+FROM deliveries
+GROUP BY match_id, inning
+ORDER BY score ASC
+LIMIT 10;
+#toss vs actual winner
+SELECT COUNT(*) AS matches_where_toss_helped
+FROM matches
+WHERE toss_winner = winner;
+#Toss Decision Analysis
+SELECT toss_decision,
+       COUNT(*) AS frequency
+FROM matches
+GROUP BY toss_decision;
+#most matched played by the teams
+SELECT team,
+       COUNT(*) AS matches_played
+FROM
+(
+    SELECT team1 AS team FROM matches
+    UNION ALL
+    SELECT team2 AS team FROM matches
+) t
+GROUP BY team
+ORDER BY matches_played DESC;
+#best bowling figure
+SELECT bowler,
+       match_id,
+       SUM(is_wicket) AS wickets
+FROM deliveries
+GROUP BY bowler, match_id
+ORDER BY wickets DESC
+LIMIT 10;
+#orange cap analysis
+SELECT m.season,
+       d.batter,
+       SUM(d.batsman_runs) AS runs
+FROM deliveries d
+JOIN matches m
+ON d.match_id = m.id
+GROUP BY m.season, d.batter
+ORDER BY m.season, runs DESC;
+#purple cap analysis
+SELECT m.season,
+       d.bowler,
+       SUM(d.is_wicket) AS wickets
+FROM deliveries d
+JOIN matches m
+ON d.match_id = m.id
+GROUP BY m.season, d.bowler
+ORDER BY m.season, wickets DESC;
+
